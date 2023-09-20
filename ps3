@@ -1,0 +1,161 @@
+Bisection method:
+from sympy import *
+import numpy as np
+import matplotlib.pyplot as plt
+x=Symbol('x')
+def f(x):
+    return x*x*x + 2*x*x +10*x -20
+a=1
+b=-3
+j=np.linspace(a,b)
+plt.plot(j,f(j))
+plt.show()
+l=[]
+i=0
+if(f(a)==0):
+    print(a,"is the root")
+elif(f(b)==0):
+    print(b,"is the root")
+else:
+    while(True):
+        xn=(a+b)/2
+        expr=f(xn)
+        if(expr==0):
+            print(xn,"is the root")
+            break
+        if f(a)*f(xn)<=0:
+            b=xn
+        elif f(b)*f(xn)<=0:
+            a=xn
+        else:
+            continue
+        y=np.round_(xn,decimals=3)
+        l.append(y)
+        if(i!=0):
+            if(l[i]==l[i-1]):
+                break
+        i+=1
+    print(l[-1],"is the root")
+
+
+Regula falsi mathod
+from sympy import *
+import numpy as np
+import matplotlib.pyplot as plt
+x=Symbol('x')
+def f(x):
+    return x*x*x + 2*x*x +10*x -20
+a=1
+b=-3
+j=np.linspace(a,b)
+plt.plot(j,f(j))
+plt.show()
+l=[]
+i=0
+if(f(a)==0):
+    print(a,"is the root")
+elif(f(b)==0):
+    print(b,"is the root")
+else:
+    while(True):
+        hn=(np.absolute(f(a))*(b-a))/(np.absolute(f(a))+np.absolute(f(b)))
+        xn=a+hn
+        expr=f(xn)
+        if(expr==0):
+            print(xn,"is the root")
+            break
+        if f(a)*f(xn)<=0:
+            b=xn
+        elif f(b)*f(xn)<=0:
+            a=xn
+        else:
+            continue
+        y=np.round_(xn,decimals=3)
+        l.append(y)
+        if(i!=0):
+            if(l[i]==l[i-1]):
+                break
+        i+=1
+    print(l[-1],"is the root")
+
+
+Newton raphson
+from sympy import * 
+import numpy as np
+import matplotlib.pyplot as plt
+x=Symbol('x')
+def f(x):
+    return x*x*x + 2*x*x +10*x -20
+exp=(3*x**2)+(2*x)+1
+a=1
+b=-3
+j=np.linspace(a,b)
+plt.plot(j,f(j))
+plt.show()
+ll=[]
+i=0
+if(f(a)==0):
+    print(a,"is the root")
+elif(f(b)==0):
+    print(b,"is the root")
+else:
+    xn=a
+    while(True):
+        expr=f(xn)
+        xn1=Derivative(exp,x)
+        xn3=xn1.doit()
+        l=xn3.subs(x,xn)
+        m=f(xn)
+        hn=-m/l
+        hn=float(hn)
+        xn2=xn+hn
+        if(expr==0):
+            print(xn,"is the root")
+            break
+        y=np.round_(xn2,decimals=3)
+        ll.append(y)
+        xn=xn2
+        if(i!=0):
+            if(ll[i]==ll[i-1]):
+                break
+        i+=1
+    print(ll[-1],"is the root")
+
+
+Fixed point iteration
+from sympy import * 
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+x=Symbol('x')
+def f(x):
+    return x*x*x + 2*x*x +10*x -20
+def f1(x):
+    return 1/math.sqrt(1+x)
+a=1
+b=-3
+j=np.linspace(a,b)
+plt.plot(j,f(j))
+plt.show()
+ll=[]
+i=0
+if(f(a)==0):
+    print(a,"is the root")
+elif(f(b)==0):
+    print(b,"is the root")
+else:
+    xn=a
+    while(True):
+        expr=f(xn)
+        l=f1(xn)
+        if(expr==0):
+            print(xn,"is the root")
+            break
+        y=np.round_(l,decimals=3)
+        ll.append(y)
+        xn=l
+        if(i!=0):
+            if(ll[i]==ll[i-1]):
+                break
+        i+=1
+    print(ll[-1],"is the root")
