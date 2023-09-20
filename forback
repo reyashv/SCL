@@ -1,0 +1,56 @@
+import numpy as np
+import matplotlib.pyplot as plt
+def diff(x, y, forward=True):
+    n = len(x)
+    f = np.zeros((n, n))
+    for i in range(n):
+        f[i, 0] = y[i]
+    for j in range(1, n):
+        for i in range(n - j):
+            if forward:
+                f[i, j] = (f[i + 1, j - 1] - f[i, j - 1]) / (x[i + j] - x[i])
+            else:
+                f[i, j] = (f[i, j - 1] - f[i - 1, j - 1]) / (x[i] - x[i - j])
+    return f
+
+def nInterpolation(x, y, xi, forward=True):
+    n = len(x)
+    f = diff(x, y, forward)
+    
+    result = 0.0
+    for i in range(n):
+        term = f[0, i]
+        for j in range(i):
+            if forward:
+                term *= (xi - x[j])
+            else:
+                term *= (xi - x[n - 1 - j])
+        result += term
+    
+    return result
+
+def table(x, f):
+    n = len(x)
+    for i in range(n):
+        print(f'x{i} = {x[i]},', end=' ')
+        for j in range(n - i):
+            print(f'f{i + j} = {f[i, j]:.6f}', end='   ')
+x = [3, 4, 5, 6, 7, 8, 9]
+y = [4.8, 8.4, 14.5, 23.6, 36.2, 52.8, 73.9]
+xi = 3.5
+xii = 8.5
+
+print("Newton's Forward Interpolation:")
+fwd = nInterpolation(x, y, xi, forward=True)
+fTable = diff(x, y, forward=True)
+table(x, fTable)
+print("Value at ", xi, "=  ", fwd)
+
+print("\nNewton's Backward Interpolation:")
+bwd = nInterpolation(x, y, xii, forward=False)
+bTable = diff(x, y, forward=False)
+table(x, bTable)
+print("Value at ", xii, "=  ", bwd)
+
+plt.plot(x,y)
+plt.show()
