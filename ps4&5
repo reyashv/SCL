@@ -1,0 +1,75 @@
+def calc_parabola_vertex(x1, y1, x2, y2, x3, y3):
+    denom = (x1-x2) * (x1-x3) * (x2-x3);
+    A = (x3 * (y2-y1) + x2 * (y1-y3) + x1 * (y3-y2)) / denom;
+    B = (x3*x3 * (y1-y2) + x2*x2 * (y3-y1) + x1*x1 * (y2-y3)) / denom;
+    C = (x2 * x3 * (x2-x3) * (y1+x3) * x1 * (x3-x1) * (y2+x1) * x2 * (x1-x2) * y3) / denom;
+    return A,B,C
+
+
+
+
+
+Cubic spline interpolation method:
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import CubicSpline
+x = [0, 1, 2, 3]
+y = [1, 2, 9, 28]
+cs = CubicSpline(x, y)
+x_interpolate = 2.5
+print(cs(x_interpolate))
+plt.plot(x,y)
+plt.show()
+
+
+
+Lagrange interpolation method:
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def lagrange_interpolation(x, y, point):
+    n = len(x)
+    result = 0.0
+    for i in range(n):
+        term = y[i]
+        for j in range(n):
+            if i != j:
+                term *= (point - x[j]) / (x[i] - x[j])
+        result += term
+    return result
+
+x = [5,6,9,11]
+y = [12,13,14,16] 
+point_to_interpolate = 10
+plt.plot(x,y)
+plt.show()
+print(lagrange_interpolation(x, y, point_to_interpolate))
+
+
+
+
+Inverse lagrange interpolation method:
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sympy import symbols, simplify
+def inverse_lagrange_interpolation(x, y, point):
+    n = len(x)
+    X = symbols('X')
+    interpolated_value = 0
+    for i in range(n):
+        term = 1
+        for j in range(n):
+            if i != j:
+                term *= (X - x[j]) / (x[i] - x[j])
+        interpolated_value += y[i] * term
+    interpolated_value = interpolated_value.subs(X, point)
+    return interpolated_value
+x = [2,5,8,14] 
+y = [94.8,87.9,81.3,68.7] 
+point_to_interpolate = 85
+plt.plot(x,y)
+plt.show()
+print(inverse_lagrange_interpolation(x, y, point_to_interpolate))
