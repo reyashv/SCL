@@ -73,3 +73,94 @@ plt.legend()
 
 plt.tight_layout()
 plt.show()
+
+
+
+
+
+import numpy as np
+from sympy import*
+from math import *
+import matplotlib.pyplot as plt
+import sympy as sp
+
+n = int(input("Enter the number of data points : "))
+x_pts = list(map(int,(input("Enter the x values seperated by a white space  : ").split())))
+y_pts = list(map(int,(input("Enter the f(x) values sepearated by a white space : ").split())))
+
+m=[]
+for i in range(n):
+  m.append(Symbol(f'm_{i}'))
+print(m)
+
+equations=[]
+
+for i in range(1,n-1):
+  eq = Eq((m[i-1]+(4*m[i])+m[i+1]),6*(y_pts[i-1]-(2*y_pts[i])+y_pts[i+1]))
+  equations.append(eq)
+
+substituitions = {m[0]: 0 ,m[n-1]: 0}
+equations_with_subs = [eq.subs(substituitions) for eq in equations]
+
+m_final=[]
+rem_m=[]
+for i in range (0,n):
+  if(i==0 or i == n-1) : 
+    m_final.append(0)
+  else:
+    m_final.append(m[i])
+    rem_m.append(m[i])
+
+for eq in equations_with_subs:
+  print(eq)
+
+solution = sp.solve(equations_with_subs,rem_m)
+print(solution)
+
+x=Symbol('x')
+f_x = []
+
+
+for i in range(0,n-1):
+  print(i)
+  y = (1/6)*((x_pts[i+1] - x)**3)*m_final[i] + (1/6)*((x - x_pts[i])**3)*m_final[i+1] + (x_pts[i+1] - x)*(y_pts[i] - (1/6)*m_final[i]) + (x - x_pts[i])*(y_pts[i+1]-(1/6)*m_final[i+1])
+  f_x.append(y)
+
+res_f=[]
+
+for f in f_x:
+  for i in range(1,n-1):
+    f=f.subs(sp.Symbol(f'm_{i}'),solution[sp.Symbol(f'm_{i}')])
+  res_f.append(simplify(f))
+  print(simplify(f))
+
+inp=float(input("Enter the interpolated value :"))
+c_inp = ceil(inp)
+res = res_f[int(c_inp) -1].subs(x,inp)
+print("Result : ",res)
+
+x_vals_all=[]
+y_vals_all=[]
+
+for i in range(n-1):
+  x_vals=[]
+  y_vals=[]
+  x1 = x_pts[i+0]
+  x2 = x_pts[i+1]
+  x_vals.extend(np.linspace(x1,x2,50))
+  for val in x_vals:
+    y_vals.append(res_f[i].subs(x,val))
+  x_vals_all.extend(x_vals)
+  y_vals_all.extend(y_vals)
+
+fig , ax =plt.subplots()
+
+x_pts.append(inp)
+y_pts.append(res)
+
+ax.scatter(x_pts,y_pts,color='red',label='datapoints')
+ax.plot(x_vals_all,y_vals_all,label="inerpolation")
+plt.legend()
+plt.show()
+
+
