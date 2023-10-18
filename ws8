@@ -139,6 +139,11 @@ for i in range(num_steps_rk4):
     y0 = runge_kutta_fourth(x0, y0, h)
     x_values_rk4.append(x0)
     y_values_rk4.append(y0)
+    
+for x in [0.1, 0.2, 0.3]:
+    index = int(x / h)
+    print(f"y({x:.1f}) using Euler's method: {y_values_rk4[index]:.4f}")
+
 
 def milne_predictor_corrector(x_values, y_values, h):
     n = len(x_values)
@@ -159,24 +164,12 @@ def adams_bashforth(x_values, y_values, h):
     )
     return y_predicted
 
-y_values_at_x = {}
-for x in [0.1, 0.2, 0.3]:
-    while x_values_rk4[-1] < x:
-        x0 += h
-        y0 = runge_kutta_fourth(x0, y0, h)
-        x_values_rk4.append(x0)
-        y_values_rk4.append(y0)
-    y_values_at_x[x] = y0
-
 y_milne_predictor_corrector = milne_predictor_corrector(x_values_rk4, y_values_rk4, h)
 y_adams_bashforth = adams_bashforth(x_values_rk4, y_values_rk4, h)
 
-print("Values at x = 0.1, 0.2, and 0.3 using Runge-Kutta fourth-order method:")
-for x, y in y_values_at_x.items():
-    print(f"x = {x:.1f}, y = {y:.4f}")
-
 print(f"y(0.4) by Milne's Predictor-Corrector: {y_milne_predictor_corrector:.4f}")
 print(f"y(0.4) by Adams-Bashforth: {y_adams_bashforth:.4f}")
+
 
 
 
