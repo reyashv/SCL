@@ -1,56 +1,137 @@
-import numpy as np
 import matplotlib.pyplot as plt
-def diff(x, y, forward=True):
-    n = len(x)
-    f = np.zeros((n, n))
-    for i in range(n):
-        f[i, 0] = y[i]
-    for j in range(1, n):
-        for i in range(n - j):
-            if forward:
-                f[i, j] = (f[i + 1, j - 1] - f[i, j - 1]) / (x[i + j] - x[i])
-            else:
-                f[i, j] = (f[i, j - 1] - f[i - 1, j - 1]) / (x[i] - x[i - j])
+from sympy import *
+import numpy as np
+
+def createTable(x, y, n, table):
+  for col in range(1, n):
+    for row in range(n-col):
+      table[row][col] = round(table[row+1][col-1]-table[row][col-1], 2)
+  return table
+
+def calculate(u, n):
+  temp = u
+  for i in range(1, n):
+      temp = temp*(u-i)
+  print(temp)
+  return temp
+
+def fact(n):
+    f = 1
+    for i in range(2, n+1):
+        f *= i
     return f
 
-def nInterpolation(x, y, xi, forward=True):
-    n = len(x)
-    f = diff(x, y, forward)
-    
-    result = 0.0
-    for i in range(n):
-        term = f[0, i]
-        for j in range(i):
-            if forward:
-                term *= (xi - x[j])
-            else:
-                term *= (xi - x[n - 1 - j])
-        result += term
-    
-    return result
+xVal = list(map(float, input("Enter x values : ").split()))
+yVal = list(map(float, input("Enter y values : ").split()))
+x, y = symbols('x y')
+n = len(xVal)
 
-def table(x, f):
-    n = len(x)
-    for i in range(n):
-        print(f'x{i} = {x[i]},', end=' ')
-        for j in range(n - i):
-            print(f'f{i + j} = {f[i, j]:.6f}', end='   ')
-x = [3, 4, 5, 6, 7, 8, 9]
-y = [4.8, 8.4, 14.5, 23.6, 36.2, 52.8, 73.9]
-xi = 3.5
-xii = 8.5
+table = [[0.0 for i in range(n)] for i in range(n)]
+for i in range(n):
+    table[i][0] = yVal[i]
 
-print("Newton's Forward Interpolation:")
-fwd = nInterpolation(x, y, xi, forward=True)
-fTable = diff(x, y, forward=True)
-table(x, fTable)
-print("Value at ", xi, "=  ", fwd)
+table = createTable(xVal, yVal, n, table)
+for row in table:
+    print(row)
 
-print("\nNewton's Backward Interpolation:")
-bwd = nInterpolation(x, y, xii, forward=False)
-bTable = diff(x, y, forward=False)
-table(x, bTable)
-print("Value at ", xii, "=  ", bwd)
+inp = float(input("Value to interpolate at : "))
 
-plt.plot(x,y)
-plt.show()
+y = table[0][0]
+u = (x-xVal[0])/(xVal[1]-xVal[0])
+
+for i in range(1,n):
+    y += (((calculate(u, i))*(table[0][i])) / fact(i));
+
+pol = simplify(y)
+res = pol.subs(x, inp)
+print("result: ", res)
+
+xPts = np.linspace(min(xVal), max(xVal), 100)
+yPts = []
+
+for p in xPts:
+  yPts.append(pol.subs(x, p))
+
+xVal.append(inp)
+yVal.append(res)
+ax, fig = plt.subplots()
+plt.plot(xPts, yPts)
+plt.scatter(xVal, yVal, color='red')
+
+firstDiff = diff(pol)
+res1 = firstDiff.subs(x, inp)
+print("res-1: ",res1)
+
+secondDiff = diff(firstDiff)
+res2 = secondDiff.subs(x, inp)
+print("res-2: ",res2)
+
+# NEWTON’S BACKWARD INTERPOLATION
+import matplotlib.pyplot as plt
+from sympy import *
+import numpy as np
+
+
+def createTable(x, y, n, table):
+    for i in range(1, n):
+      for j in range(n-1, i-1, -1):
+        table[j][i] = table[j][i-1] - table[j-1][i-1]
+    return table
+
+def calculate(u, n):
+    temp = u
+    for i in range(1, n):
+        temp = temp * (u + i)
+    return temp
+
+def fact(n):
+    f = 1
+    for i in range(2, n+1):
+        f *= i
+    return f
+
+xVal = list(map(float, input("x values : ").split()))
+yVal = list(map(float, input("y values : ").split()))
+x, y = symbols('x y')
+n = len(xVal)
+
+table = [[0.0 for i in range(n)] for i in range(n)]
+for i in range(n):
+    table[i][0] = yVal[i]
+
+table = createTable(xVal, yVal, n, table)
+
+for row in table:
+    print(row)
+
+inp = float(input("Value to interpolate at : "))
+y = table[n-1][0]
+u = (x - xVal[n-1]) / (xVal[1] - xVal[0])
+
+for i in range(1, n):
+    y += (((calculate(u, i)) *(table[n-1][i])) / fact(i))
+
+pol = simplify(y)
+res = pol.subs(x, inp)
+print("Result : ", res)
+
+xPts = np.linspace(min(xVal), max(xVal), 100)
+yPts = []
+
+for pt in xPts:
+    yPts.append(pol.subs(x, pt))
+
+xVal.append(inp)
+yVal.append(res)
+
+fig, ax = plt.subplots()
+plt.plot(xPts, yPts)
+plt.scatter(xVal, yVal, color='red')
+
+firstDiff = diff(pol)
+res1 = firstDiff.subs(x, inp)
+print(" Result - 1 : ", res1)
+
+secondDiff = diff(firstDiff)
+res2 = secondDiff.subs(x, inp)
+print("Result - 2 : ", res2)
